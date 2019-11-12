@@ -112,6 +112,10 @@ if (isset($_POST['do_csv'])) {
     }
 
     if ($upload_ok) {
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir);
+        }
+
         if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $target_file)) {
             if ($this->update_posts_from_csv($target_file) === false) {
                 echo 'Could not read CSV file';
