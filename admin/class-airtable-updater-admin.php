@@ -172,7 +172,7 @@ class Airtable_Updater_Admin {
 					$entry[$headers[$i]] = $data[$i];
 				}
 
-				// $entry['ID'] is undefined without this line. Not sure why.
+				// Set unique ID
 				$entry['ID'] = $entry[$headers[0]];
 
 				$entries[] = $entry;
@@ -241,9 +241,9 @@ class Airtable_Updater_Admin {
 	/**
 	 * Add or update post
 	 */
-	public static function add_post($entry) {
+	public static function add_post($entry, $primary_key='ID') {
 		// ID from Airtable
-		$wt_id = $entry['ID'];
+		$wt_id = $entry[$primary_key];
 
 		// Find posts with this ID
 		$args = array(
@@ -268,7 +268,25 @@ class Airtable_Updater_Admin {
 
 		// Update custom fields
 		foreach ($entry as $field=>$value) {
-			update_field($field, $value, $post_id);
+			$field_obj = get_field_object($field, $post_id);
+
+			if ($field_obj['type'] == 'post_object') {
+				// Update post object field
+				// Airtable API sends value as array
+				$titles = is_array($value) ? $value : explode(',', $value);
+				$ids = array();
+				foreach ($titles as $title) {
+					// Find post ID assigned by Wordpress given the post title
+					$post = get_page_by_title(trim($title), OBJECT, $field_obj['post_type']);
+					if ($post != null) {
+						array_push($ids, $post->ID);
+					}
+				}
+				// Set field to array of post ID's
+				update_field($field, $ids, $post_id);
+			} else {
+				update_field($field, $value, $post_id);
+			}
 		}
 
 		if (empty($existing_posts)) {

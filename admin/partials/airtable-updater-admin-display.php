@@ -60,6 +60,7 @@ if (isset($_POST['save_workflow']) || isset($_POST['do_airtable'])) {
     $workflow->base_id = $_POST['base_id'];
     $workflow->table = $_POST['table'];
     $workflow->views = $_POST['views'];
+    $workflow->primary_key = $_POST['primary_key'];
     $workflow->api_key = $_POST['api_key'];
 
     if ($selected_workflow == -1) {
@@ -88,6 +89,7 @@ $airtable_url = $workflow->api_url;
 $base_id = $workflow->base_id;
 $table = $workflow->table;
 $views = $workflow->views;
+$primary_key = $workflow->primary_key;
 $api_key = $workflow->api_key;
 $toggle = $workflow->scheduled;
 
@@ -193,6 +195,10 @@ if (isset($_POST['do_csv'])) {
                     <fieldset>
                         <label>Views (separate with ;)</label><br>
                         <input type="text" name="views" value="<?php echo $views; ?>" />
+                    </fieldset>
+                    <fieldset>
+                        <label>Unique ID Field</label><br>
+                        <input type="text" name="primary_key" value="<?php echo $primary_key; ?>" />
                     </fieldset>
                     <fieldset>
                         <label>API Key</label><br>

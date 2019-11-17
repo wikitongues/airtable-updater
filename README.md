@@ -25,8 +25,9 @@ A Wordpress plugin that automates updating the Wikitongues website (or any Wordp
 
 To function properly, the Airtable view (or CSV file) should have the following columns:
 
-* `ID`: a unique ID for the post. This prevents duplicate posts
+* A unique ID field, input in the workflow settings
 * `post_title`: Title of the post
 * `post_status`: A valid Wordpress [post status](https://wordpress.org/support/article/post-status/). `publish` will publish the post immediately. 
 * `post_type`: One of the post types defined in the theme.
 * All custom fields for the post type.
+* For post object fields, the column should contain the `post_title`'s of referenced posts. The posts must already exist in the Wordpress database.

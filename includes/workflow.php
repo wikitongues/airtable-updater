@@ -7,7 +7,8 @@ class Workflow {
     public $base_id;
     public $table;
     public $views;
-    public $api_key;
+	public $api_key;
+	public $primary_key;
     public $scheduled;
     public $frequency;
     public $timestamp;
@@ -42,7 +43,7 @@ class Workflow {
 
 			foreach($result['records'] as $record)
 			{
-				Airtable_Updater_Admin::add_post($record['fields']);
+				Airtable_Updater_Admin::add_post($record['fields'], $this->primary_key);
 			}
 
 			return true;
