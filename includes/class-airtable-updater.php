@@ -111,6 +111,7 @@ class Airtable_Updater {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-airtable-updater-i18n.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/airtable-query.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/workflow.php';
 
 		/**

@@ -185,44 +185,6 @@ class Airtable_Updater_Admin {
 	}
 
 	/**
-	 * List records from the Airtable API
-	 */
-	public static function query_airtable($base_url, $base_id, $table, $view, $api_key)
-	{
-		$url = $base_url . '/' . $base_id . '/' . $table . '?view=' . $view;
-		
-		// Initialize a CURL session. 
-		$ch = curl_init();  
-		
-		// Return Page contents. 
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-		
-		//grab URL and pass it to the variable. 
-		curl_setopt($ch, CURLOPT_URL, $url); 
-
-		// Attach API key
-		$header = array();
-		$header[] = 'Authorization: Bearer ' . $api_key;
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-		// Result as JSON string
-		$result = curl_exec($ch); 
-		
-		// Close CURL session
-		curl_close($ch);
-
-		// Decode as associative array
-		$arr = json_decode($result, true);
-
-		if ($arr['error']) {
-			echo $arr['error']['message'];
-			return false;
-		}
-
-		return $arr;
-	}
-
-	/**
 	 * Read a CSV file and update posts
 	 */
 	public function update_posts_from_csv($path, $max_length=1000, $delimiter=',') 

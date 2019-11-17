@@ -30,18 +30,20 @@ class Workflow {
 	public function update_posts_from_airtable()
 	{
 		foreach (explode(';', $this->views) as $view) {
-			$result = Airtable_Updater_Admin::query_airtable(
-				$this->api_url, 
-				$this->base_id, 
+			$query = new Airtable_Query(
+				$this->api_url,
+				$this->base_id,
 				rawurlencode($this->table),
 				rawurlencode($view),
 				$this->api_key);
+			
+			$records = $query->get_records();
 
-			if ($result === false) {
+			if ($records === false) {
 				return false;
 			}
 
-			foreach($result['records'] as $record)
+			foreach($records as $record)
 			{
 				Airtable_Updater_Admin::add_post($record['fields'], $this->primary_key);
 			}
