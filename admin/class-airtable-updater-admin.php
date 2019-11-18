@@ -230,7 +230,7 @@ class Airtable_Updater_Admin {
 
 		// Update custom fields
 		foreach ($entry as $field=>$value) {
-			$field_obj = get_field_object($field, $post_id);
+			$field_obj = acf_maybe_get_field($field, false, false);
 
 			if ($field_obj['type'] == 'post_object') {
 				// Update post object field
