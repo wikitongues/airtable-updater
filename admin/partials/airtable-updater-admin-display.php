@@ -129,6 +129,7 @@ if (isset($_POST['do_csv'])) {
         }
     }
 } else if (isset($_POST['do_airtable'])) {
+    set_time_limit(0);
     if ($workflow->update_posts_from_airtable()) {
         echo 'Done';
     }
