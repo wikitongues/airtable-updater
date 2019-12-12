@@ -43,10 +43,7 @@ class Workflow {
 				return false;
 			}
 
-			foreach($records as $record)
-			{
-				Airtable_Updater_Admin::add_post($record['fields'], $this->primary_key);
-			}
+			wp_schedule_single_event(time(), 'add_posts', array($records, $this->primary_key));
 
 			return true;
 		}

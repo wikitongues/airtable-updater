@@ -201,6 +201,24 @@ class Airtable_Updater_Admin {
 	}
 
 	/**
+	 * Add or update a batch of posts
+	 */
+	public static function add_posts($records, $primary_key='ID') {
+		$batch_size = 100;
+		for ($i = 0; $i < $batch_size; $i++) {
+			$this->add_post(array_pop($records)['fields'], $primary_key);
+
+			if (empty($records)) {
+				return;
+			}
+		}
+
+		if (!empty($records)) {
+			wp_schedule_single_event(time(), 'add_posts', array($records, $primary_key));
+		}
+	}
+
+	/**
 	 * Add or update post
 	 */
 	public static function add_post($entry, $primary_key='ID') {
