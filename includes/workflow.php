@@ -37,16 +37,7 @@ class Workflow {
 				rawurlencode($view),
 				$this->api_key);
 			
-			$records = $query->get_records();
-
-			if ($records === false) {
-				return false;
-			}
-
-			foreach($records as $record)
-			{
-				Airtable_Updater_Admin::add_post($record['fields'], $this->primary_key);
-			}
+			wp_schedule_single_event(time(), 'add_posts', array($query, null, $this->primary_key));
 
 			return true;
 		}

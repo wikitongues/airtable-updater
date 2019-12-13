@@ -201,6 +201,25 @@ class Airtable_Updater_Admin {
 	}
 
 	/**
+	 * Query Airtable and add posts
+	 */
+	public static function add_posts($query, $offset=null, $primary_key='ID') {
+		$result = $query->do_query($offset);
+
+		if ($result === false) {
+			return;
+		}
+
+		foreach ($result['records'] as $record) {
+			$this->add_post($record['fields'], $primary_key);
+		}
+
+		if ($result['offset']) {
+			wp_schedule_single_event(time(), 'add_posts', array($query, $result['offset'], $primary_key));
+		}
+	}
+
+	/**
 	 * Add or update post
 	 */
 	public static function add_post($entry, $primary_key='ID') {

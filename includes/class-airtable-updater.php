@@ -172,6 +172,9 @@ class Airtable_Updater {
 
 		// Add action hook for scheduled update
 		$this->loader->add_action( 'admin_scheduled_update', $plugin_admin, 'scheduled_update' );
+		
+		// Add action hook to add batch of posts
+		$this->loader->add_action( 'add_posts', $plugin_admin, 'add_posts', 10, 3 );
 
 		// Define monthly interval
 		$this->loader->add_filter( 'cron_schedules', $plugin_admin, 'define_monthly' );

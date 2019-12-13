@@ -19,7 +19,7 @@ class Airtable_Query {
 
     // https://github.com/Airtable/airtable.js/blob/master/lib/query.js
 
-    private function do_query($offset=null) {
+    public function do_query($offset=null) {
         $url = $this->base_url . '/' . $this->base_id . '/' . $this->table . '?view=' . $this->view;
         
         if ($offset !== null) {
