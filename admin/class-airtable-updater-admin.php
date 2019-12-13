@@ -201,20 +201,21 @@ class Airtable_Updater_Admin {
 	}
 
 	/**
-	 * Add or update a batch of posts
+	 * Query Airtable and add posts
 	 */
-	public static function add_posts($records, $primary_key='ID') {
-		$batch_size = 100;
-		for ($i = 0; $i < $batch_size; $i++) {
-			$this->add_post(array_pop($records)['fields'], $primary_key);
+	public static function add_posts($query, $offset=null, $primary_key='ID') {
+		$result = $query->do_query($offset);
 
-			if (empty($records)) {
-				return;
-			}
+		if ($result === false) {
+			return;
 		}
 
-		if (!empty($records)) {
-			wp_schedule_single_event(time(), 'add_posts', array($records, $primary_key));
+		foreach ($result['records'] as $record) {
+			$this->add_post($record['fields'], $primary_key);
+		}
+
+		if ($result['offset']) {
+			wp_schedule_single_event(time(), 'add_posts', array($query, $offset, $primary_key));
 		}
 	}
 

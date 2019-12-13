@@ -37,13 +37,7 @@ class Workflow {
 				rawurlencode($view),
 				$this->api_key);
 			
-			$records = $query->get_records();
-
-			if ($records === false) {
-				return false;
-			}
-
-			wp_schedule_single_event(time(), 'add_posts', array($records, $this->primary_key));
+			wp_schedule_single_event(time(), 'add_posts', array($query, null, $this->primary_key));
 
 			return true;
 		}
