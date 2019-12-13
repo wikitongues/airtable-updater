@@ -215,7 +215,7 @@ class Airtable_Updater_Admin {
 		}
 
 		if ($result['offset']) {
-			wp_schedule_single_event(time(), 'add_posts', array($query, $offset, $primary_key));
+			wp_schedule_single_event(time(), 'add_posts', array($query, $result['offset'], $primary_key));
 		}
 	}
 
