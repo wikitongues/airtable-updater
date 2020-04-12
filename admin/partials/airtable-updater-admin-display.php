@@ -176,9 +176,11 @@ if (isset($_POST['do_csv'])) {
     var nonce = '<?php echo $nonce; ?>';
   </script>
 
+  <?php if ($selected_workflow != -1 && !isset($_POST['save_workflow']) && !isset($_POST['workflow_select'])): ?>
   <div id="progress">
     Loading progress...
   </div>
+  <?php endif; ?>
 
   <?php if ($toggle) echo '<b>Next scheduled update: ' . $next_scheduled . '</b>'; ?>
 

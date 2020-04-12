@@ -37,7 +37,9 @@
         url: myAjax.ajaxurl,
         data: {action: 'refresh_workflow', nonce: nonce},
         success: function(response) {
-          if (response.hasOwnProperty('status') && response.hasOwnProperty('posts_updated')) {
+          if (response === null) {
+            clearInterval(interval);
+          } else if (response.hasOwnProperty('status') && response.hasOwnProperty('posts_updated')) {
             if (response.status === null && response.posts_updated === null) {
               $('#progress').html('Workflow not run yet');
               clearInterval(interval);
