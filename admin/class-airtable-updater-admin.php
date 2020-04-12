@@ -96,8 +96,11 @@ class Airtable_Updater_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/airtable-updater-admin.js', array( 'jquery' ), $this->version, false );
-
+    wp_register_script( 'admin_script', plugin_dir_url( __FILE__ ) . 'js/airtable-updater-admin.js', array('jquery') );
+    wp_localize_script( 'admin_script', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));        
+ 
+    wp_enqueue_script( 'jquery' );
+    wp_enqueue_script( 'admin_script' );
 	}
 
 	/**
@@ -374,5 +377,26 @@ class Airtable_Updater_Admin {
 	public function options_update() {
 		register_setting($this->plugin_name, 'workflows');
 		register_setting($this->plugin_name, 'selected_workflow');
-	}
+  }
+  
+  public function refresh_workflow() {
+    if ( !wp_verify_nonce( $_REQUEST['nonce'], 'refresh_workflow_nonce')) {
+      exit('Could not verify nonce');
+    }  
+
+    $workflows = get_option('workflows');
+    $selected_workflow = get_option('selected_workflow');
+
+    $workflow = $workflows[$selected_workflow];
+
+    if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+      $result = json_encode($workflow);
+      echo $result;
+    }
+    else {
+      header("Location: ".$_SERVER["HTTP_REFERER"]);
+    }
+
+    die();
+  }
 }

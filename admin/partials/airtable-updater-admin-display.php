@@ -131,6 +131,9 @@ if (isset($_POST['do_csv'])) {
 } else if (isset($_POST['do_airtable'])) {
   set_time_limit(0);
   $this->update_posts_from_airtable($selected_workflow);
+
+  $workflows = get_option('workflows');
+  $workflow = $workflows[$selected_workflow];
 }
 ?>
 
@@ -165,7 +168,17 @@ if (isset($_POST['do_csv'])) {
     <input type="hidden" name="workflow_select" value="1" />
   </form>
 
-  <?php if (isset($workflow->status)) echo $workflow->status . '<br>' . $workflow->posts_updated . ' posts updated'; ?>
+  <?php
+    $nonce = wp_create_nonce('refresh_workflow_nonce');
+  ?>
+
+  <script>
+    var nonce = '<?php echo $nonce; ?>';
+  </script>
+
+  <div id="progress">
+    Loading progress...
+  </div>
 
   <?php if ($toggle) echo '<b>Next scheduled update: ' . $next_scheduled . '</b>'; ?>
 
