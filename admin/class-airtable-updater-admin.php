@@ -210,6 +210,10 @@ class Airtable_Updater_Admin {
 	{
     $workflows = get_option('workflows');
     $workflow = $workflows[$workflow_id];
+
+    if ($workflow->status == 'In progress') {
+      return true;
+    }
     
     $workflow->status = 'In progress';
     $workflow->posts_updated = 0;
