@@ -218,7 +218,7 @@ class Airtable_Updater_Admin {
       $workflow->api_url,
       $workflow->base_id,
       rawurlencode($workflow->table),
-      rawurlencode($workflow->views),
+      rawurlencode($workflow->view),
       $workflow->api_key);
     
     wp_schedule_single_event(time(), 'add_posts', array($query, $workflow_id, null, $workflow->primary_key));

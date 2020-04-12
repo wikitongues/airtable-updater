@@ -6,7 +6,7 @@ class Workflow {
     public $api_url;
     public $base_id;
     public $table;
-    public $views;
+    public $view;
     public $api_key;
     public $primary_key;
     public $scheduled;
