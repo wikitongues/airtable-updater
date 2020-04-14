@@ -96,8 +96,11 @@ class Airtable_Updater_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/airtable-updater-admin.js', array( 'jquery' ), $this->version, false );
-
+    wp_register_script( 'admin_script', plugin_dir_url( __FILE__ ) . 'js/airtable-updater-admin.js', array('jquery') );
+    wp_localize_script( 'admin_script', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));        
+ 
+    wp_enqueue_script( 'jquery' );
+    wp_enqueue_script( 'admin_script' );
 	}
 
 	/**
@@ -198,25 +201,64 @@ class Airtable_Updater_Admin {
 		} else {
 			return false;
 		}
-	}
+  }
+  
+	/**
+	 * Query Airtable and update posts
+	 */
+	public function update_posts_from_airtable($workflow_id)
+	{
+    $workflows = get_option('workflows');
+    $workflow = $workflows[$workflow_id];
+
+    if ($workflow->status == 'In progress') {
+      return true;
+    }
+    
+    $workflow->status = 'In progress';
+    $workflow->posts_updated = 0;
+
+    $query = new Airtable_Query(
+      $workflow->api_url,
+      $workflow->base_id,
+      rawurlencode($workflow->table),
+      rawurlencode($workflow->view),
+      $workflow->api_key);
+    
+    wp_schedule_single_event(time(), 'add_posts', array($query, $workflow_id, null, $workflow->primary_key));
+
+    update_option('workflows', $workflows);
+
+    return true;
+}
 
 	/**
 	 * Query Airtable and add posts
 	 */
-	public static function add_posts($query, $offset=null, $primary_key='ID') {
+	public static function add_posts($query, $workflow_id, $offset=null, $primary_key='ID') {
+    $workflows = get_option('workflows');
+    $workflow = $workflows[$workflow_id];
+
 		$result = $query->do_query($offset);
 
 		if ($result === false) {
+      $workflow->status = 'Error';
+      update_option('workflows', $workflows);
 			return;
 		}
 
 		foreach ($result['records'] as $record) {
-			$this->add_post($record['fields'], $primary_key);
+      $this->add_post($record['fields'], $primary_key);
+      $workflow->posts_updated++;
+      update_option('workflows', $workflows);
 		}
 
 		if ($result['offset']) {
-			wp_schedule_single_event(time(), 'add_posts', array($query, $result['offset'], $primary_key));
-		}
+			wp_schedule_single_event(time(), 'add_posts', array($query, $workflow_id, $result['offset'], $primary_key));
+		} else {
+      $workflow->status = 'Done';
+      update_option('workflows', $workflows);
+    }
 	}
 
 	/**
@@ -302,11 +344,11 @@ class Airtable_Updater_Admin {
 
 		if (!array_key_exists($workflow_id, $workflows)) {
 			$args = array($workflow_id);
-			wp_clear_scheduled_hook('admin_scheduled_update', $args);
+      wp_clear_scheduled_hook('admin_scheduled_update', $args);
+      return;
 		}
 
-		$workflow = $workflows[$workflow_id];
-		$workflow->update_posts_from_airtable();
+		$this->update_posts_from_airtable($workflow_id);
 	}
 
 	/**
@@ -339,5 +381,26 @@ class Airtable_Updater_Admin {
 	public function options_update() {
 		register_setting($this->plugin_name, 'workflows');
 		register_setting($this->plugin_name, 'selected_workflow');
-	}
+  }
+  
+  public function refresh_workflow() {
+    if ( !wp_verify_nonce( $_REQUEST['nonce'], 'refresh_workflow_nonce')) {
+      exit('Could not verify nonce');
+    }  
+
+    $workflows = get_option('workflows');
+    $selected_workflow = get_option('selected_workflow');
+
+    $workflow = $workflows[$selected_workflow];
+
+    if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+      $result = json_encode($workflow);
+      echo $result;
+    }
+    else {
+      header("Location: ".$_SERVER["HTTP_REFERER"]);
+    }
+
+    die();
+  }
 }

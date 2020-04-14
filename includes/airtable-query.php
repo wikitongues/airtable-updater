@@ -57,25 +57,6 @@ class Airtable_Query {
 
 		return $arr;
     }
-
-    private function each_page($all_records=array(), $offset=null) {
-        $result = $this->do_query($offset);
-
-        if ($result === false) {
-            return false;
-        } else {
-            $all_records = array_merge($all_records, $result['records']);
-            if ($result['offset']) {
-                return $this->each_page($all_records, $result['offset']);
-            }
-            return $all_records;
-        }
-    }
-
-    public function get_records() {
-        $all_records = $this->each_page();
-        return $all_records;
-    }
 }
 
 ?>

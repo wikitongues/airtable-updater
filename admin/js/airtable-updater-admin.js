@@ -29,4 +29,38 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
+   $(window).load(function() {
+    var interval = setInterval(function() {
+      $.ajax({
+        type: 'post',
+        dataType: 'json',
+        url: myAjax.ajaxurl,
+        data: {action: 'refresh_workflow', nonce: nonce},
+        success: function(response) {
+          if (response === null) {
+            clearInterval(interval);
+          } else if (response.hasOwnProperty('status') && response.hasOwnProperty('posts_updated')) {
+            if (response.status === null && response.posts_updated === null) {
+              $('#progress').html('Workflow not run yet');
+              clearInterval(interval);
+            } else {
+              $('#progress').html(response.status + '<br>' + response.posts_updated + ' posts updated');
+            }
+
+            if (response.status == 'Done') {
+              clearInterval(interval);
+            }
+          } else {
+            console.error(response);
+            clearInterval(interval);
+          }
+        },
+        error: function(response) {
+          console.error(response);
+          clearInterval(interval);
+        }
+      });
+    }, 2000);
+   });
+
 })( jQuery );
