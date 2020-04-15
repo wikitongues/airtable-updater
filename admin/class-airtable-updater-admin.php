@@ -230,7 +230,9 @@ class Airtable_Updater_Admin {
     update_option('workflows', $workflows);
 
     return true;
-}
+  }
+
+  private static $debug_message = '';
 
 	/**
 	 * Query Airtable and add posts
@@ -245,7 +247,7 @@ class Airtable_Updater_Admin {
       $workflow->status = 'Error';
       update_option('workflows', $workflows);
 			return;
-		}
+    }
 
 		foreach ($result['records'] as $record) {
       if ($this->is_cancelled($workflow_id)) {
@@ -290,16 +292,16 @@ class Airtable_Updater_Admin {
 				)
 			)
 		);
-		$existing_posts = get_posts($args);
-		
+    $existing_posts = get_posts($args);
+    
 		if (!empty($existing_posts)) {
 			// Post already exists; set ID to post ID assigned by Wordpress
 			$entry['ID'] = $existing_posts[0]->ID;
 		}
 
 		// Create or update post
-		$post_id = wp_insert_post($entry);
-
+    $post_id = wp_insert_post($entry);
+    
 		// Update custom fields
 		foreach ($entry as $field=>$value) {
 			$field_obj = acf_maybe_get_field($field, false, false);

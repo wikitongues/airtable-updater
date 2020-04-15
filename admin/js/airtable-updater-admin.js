@@ -44,7 +44,9 @@
               $('#progress').html('Workflow not run yet');
               clearInterval(interval);
             } else {
-              $('#progress').html(response.status + '<br>' + response.posts_updated + ' posts updated');
+              $('#progress').html(response.status + '<br>' + 
+                response.posts_updated + ' posts updated' + '<br>' + 
+                response.debug_message);
 
               if (response.status == 'In progress') {
                 $('#cancel').css('display', 'block');
