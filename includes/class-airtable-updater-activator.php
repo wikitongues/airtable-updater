@@ -32,7 +32,8 @@ class Airtable_Updater_Activator {
 	public static function activate() {
 		// Reset scheduled action options
 		update_option('workflows', array());
-		update_option('selected_workflow', -1);
+    update_option('selected_workflow', -1);
+    updated_option('cancelled_workflow_id', -1);
 	}
 
 }

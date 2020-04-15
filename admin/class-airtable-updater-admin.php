@@ -248,6 +248,13 @@ class Airtable_Updater_Admin {
 		}
 
 		foreach ($result['records'] as $record) {
+      if ($this->is_cancelled($workflow_id)) {
+        $workflow->status = 'Cancelled';
+        update_option('workflows', $workflows);
+        update_option('cancelled_workflow_id', -1);
+        return;
+      }
+  
       $this->add_post($record['fields'], $primary_key);
       $workflow->posts_updated++;
       update_option('workflows', $workflows);
@@ -259,7 +266,11 @@ class Airtable_Updater_Admin {
       $workflow->status = 'Done';
       update_option('workflows', $workflows);
     }
-	}
+  }
+  
+  private static function is_cancelled($workflow_id) {
+    return get_option('cancelled_workflow_id') == $workflow_id;
+  }
 
 	/**
 	 * Add or update post
@@ -380,7 +391,8 @@ class Airtable_Updater_Admin {
 
 	public function options_update() {
 		register_setting($this->plugin_name, 'workflows');
-		register_setting($this->plugin_name, 'selected_workflow');
+    register_setting($this->plugin_name, 'selected_workflow');
+    register_setting($this->plugin_name, 'cancelled_workflow_id');
   }
   
   public function refresh_workflow() {

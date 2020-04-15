@@ -45,9 +45,15 @@
               clearInterval(interval);
             } else {
               $('#progress').html(response.status + '<br>' + response.posts_updated + ' posts updated');
+
+              if (response.status == 'In progress') {
+                $('#cancel').css('display', 'block');
+              } else {
+                $('#cancel').css('display', 'none');
+              }
             }
 
-            if (response.status == 'Done') {
+            if (response.status == 'Done' || response.status == 'Cancelled') {
               clearInterval(interval);
             }
           } else {
