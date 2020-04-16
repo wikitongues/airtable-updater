@@ -16,7 +16,7 @@
  * Plugin Name:       Airtable Site Updater
  * Plugin URI:        wikitongues.org
  * Description:       Updates the Wikitongues website from Airtable views.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Wikitongues
  * Author URI:        wikitongues.org
  * License:           GPL-2.0+
