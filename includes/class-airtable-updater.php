@@ -174,7 +174,7 @@ class Airtable_Updater {
 		$this->loader->add_action( 'admin_scheduled_update', $plugin_admin, 'scheduled_update' );
 		
 		// Add action hook to add batch of posts
-    $this->loader->add_action( 'add_posts', $plugin_admin, 'add_posts', 10, 3 );
+    $this->loader->add_action( 'add_posts', $plugin_admin, 'add_posts', 10, 4 );
     
     // Ajax hook to refresh workflow progress
     $this->loader->add_action( 'wp_ajax_refresh_workflow', $plugin_admin, 'refresh_workflow' );

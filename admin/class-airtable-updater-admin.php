@@ -230,7 +230,9 @@ class Airtable_Updater_Admin {
     update_option('workflows', $workflows);
 
     return true;
-}
+  }
+
+  private static $debug_message = '';
 
 	/**
 	 * Query Airtable and add posts
@@ -245,9 +247,16 @@ class Airtable_Updater_Admin {
       $workflow->status = 'Error';
       update_option('workflows', $workflows);
 			return;
-		}
+    }
 
 		foreach ($result['records'] as $record) {
+      if ($this->is_cancelled($workflow_id)) {
+        $workflow->status = 'Cancelled';
+        update_option('workflows', $workflows);
+        update_option('cancelled_workflow_id', -1);
+        return;
+      }
+  
       $this->add_post($record['fields'], $primary_key);
       $workflow->posts_updated++;
       update_option('workflows', $workflows);
@@ -259,7 +268,11 @@ class Airtable_Updater_Admin {
       $workflow->status = 'Done';
       update_option('workflows', $workflows);
     }
-	}
+  }
+  
+  private static function is_cancelled($workflow_id) {
+    return get_option('cancelled_workflow_id') == $workflow_id;
+  }
 
 	/**
 	 * Add or update post
@@ -279,16 +292,16 @@ class Airtable_Updater_Admin {
 				)
 			)
 		);
-		$existing_posts = get_posts($args);
-		
+    $existing_posts = get_posts($args);
+    
 		if (!empty($existing_posts)) {
 			// Post already exists; set ID to post ID assigned by Wordpress
 			$entry['ID'] = $existing_posts[0]->ID;
 		}
 
 		// Create or update post
-		$post_id = wp_insert_post($entry);
-
+    $post_id = wp_insert_post($entry);
+    
 		// Update custom fields
 		foreach ($entry as $field=>$value) {
 			$field_obj = acf_maybe_get_field($field, false, false);
@@ -380,7 +393,8 @@ class Airtable_Updater_Admin {
 
 	public function options_update() {
 		register_setting($this->plugin_name, 'workflows');
-		register_setting($this->plugin_name, 'selected_workflow');
+    register_setting($this->plugin_name, 'selected_workflow');
+    register_setting($this->plugin_name, 'cancelled_workflow_id');
   }
   
   public function refresh_workflow() {

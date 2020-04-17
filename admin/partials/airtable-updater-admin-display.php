@@ -134,6 +134,8 @@ if (isset($_POST['do_csv'])) {
 
   $workflows = get_option('workflows');
   $workflow = $workflows[$selected_workflow];
+} else if (isset($_POST['cancel'])) {
+  update_option('cancelled_workflow_id', $selected_workflow);
 }
 ?>
 
@@ -181,6 +183,15 @@ if (isset($_POST['do_csv'])) {
     !(isset($_POST['workflow_select']) && $_POST['workflow'] == -1)): ?>
   <div id="progress">
     Loading progress...
+  </div>
+  <div id="cancel" style="display: none">
+    <?php if ($selected_workflow == get_option('cancelled_workflow_id')): ?>
+      Cancelling (may take a minute)...
+    <?php else: ?>
+    <form method="post" action="" enctype="multipart/form-data">
+      <?php submit_button('Cancel', 'primary', 'cancel', TRUE) ?>
+    </form>
+    <?php endif; ?>
   </div>
   <?php endif; ?>
 
