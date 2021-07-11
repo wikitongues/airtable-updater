@@ -49,13 +49,15 @@ if (isset($_POST['save_workflow']) || isset($_POST['do_airtable'])) {
   $toggle = $_POST['toggle_scheduled_upload'] == 'on';
   $timestamp = time();
 
-  $frequency_changed = $_POST['frequency'] != $workflow->frequency;
+  $frequency_changed = array_key_exists('frequency', $_POST) && $_POST['frequency'] != $workflow->frequency;
   $schedule_toggled = $toggle != $workflow->scheduled;
 
   $workflow->name = $_POST['workflow_name'];
   $workflow->scheduled = $toggle;
   $workflow->timestamp = $timestamp;
-  $workflow->frequency = $_POST['frequency'];
+  if (array_key_exists('frequency', $_POST)) {
+    $workflow->frequency = $_POST['frequency'];
+  }
   $workflow->api_url = $_POST['airtable_url'];
   $workflow->base_id = $_POST['base_id'];
   $workflow->table = $_POST['table'];
@@ -74,11 +76,11 @@ if (isset($_POST['save_workflow']) || isset($_POST['do_airtable'])) {
   update_option('workflows', $workflows);
 
   if ($schedule_toggled) {
-    $this->set_scheduled_post($selected_workflow);
+    self::set_scheduled_post($selected_workflow);
   } else if ($frequency_changed) {
     $args = array($selected_workflow);
     wp_clear_scheduled_hook('admin_scheduled_update', $args);
-    $this->set_scheduled_post($selected_workflow);
+    self::set_scheduled_post($selected_workflow);
   }
 }
 
@@ -119,7 +121,7 @@ if (isset($_POST['do_csv'])) {
     }
 
     if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $target_file)) {
-      if ($this->update_posts_from_csv($target_file) === false) {
+      if (self::update_posts_from_csv($target_file) === false) {
         echo 'Could not read CSV file';
       } else {
         echo 'Done';
@@ -130,7 +132,7 @@ if (isset($_POST['do_csv'])) {
   }
 } else if (isset($_POST['do_airtable'])) {
   set_time_limit(0);
-  $this->update_posts_from_airtable($selected_workflow);
+  self::update_posts_from_airtable($selected_workflow);
 
   $workflows = get_option('workflows');
   $workflow = $workflows[$selected_workflow];
