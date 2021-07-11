@@ -49,13 +49,15 @@ if (isset($_POST['save_workflow']) || isset($_POST['do_airtable'])) {
   $toggle = $_POST['toggle_scheduled_upload'] == 'on';
   $timestamp = time();
 
-  $frequency_changed = $_POST['frequency'] != $workflow->frequency;
+  $frequency_changed = array_key_exists('frequency', $_POST) && $_POST['frequency'] != $workflow->frequency;
   $schedule_toggled = $toggle != $workflow->scheduled;
 
   $workflow->name = $_POST['workflow_name'];
   $workflow->scheduled = $toggle;
   $workflow->timestamp = $timestamp;
-  $workflow->frequency = $_POST['frequency'];
+  if (array_key_exists('frequency', $_POST)) {
+    $workflow->frequency = $_POST['frequency'];
+  }
   $workflow->api_url = $_POST['airtable_url'];
   $workflow->base_id = $_POST['base_id'];
   $workflow->table = $_POST['table'];

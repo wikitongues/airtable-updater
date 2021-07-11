@@ -244,7 +244,7 @@ class Airtable_Updater_Admin {
     $result = $query->do_query($offset);
 
     if ($result === false) {
-      $message = 'Airtable API query failed'.PHP_EOL;
+      $message = 'Airtable API query failed';
       airtable_updater_log($message);
   
       $workflow->status = 'Error';
@@ -254,7 +254,7 @@ class Airtable_Updater_Admin {
 
     foreach ($result['records'] as $record) {  
       if (self::is_cancelled($workflow_id)) {
-        $message = 'Workflow '.$workflow_id.' was cancelled'.PHP_EOL;
+        $message = 'Workflow '.$workflow_id.' was cancelled';
         airtable_updater_log($message);
   
         $workflow->status = 'Cancelled';
@@ -262,16 +262,17 @@ class Airtable_Updater_Admin {
         update_option('cancelled_workflow_id', -1);
         return;
       }
-
-      $message = $workflow->posts_updated.' posts updated'.PHP_EOL;
-      airtable_updater_log($message);
   
       self::add_post($record['fields'], $primary_key);
       $workflow->posts_updated++;
+
+      $message = $workflow->posts_updated.' posts updated';
+      airtable_updater_log($message);
+
       update_option('workflows', $workflows);
     }
 
-    if ($result['offset']) {
+    if (array_key_exists('offset', $result)) {
       wp_schedule_single_event(time(), 'add_posts', array($query, $workflow_id, $result['offset'], $primary_key));
     } else {
       $workflow->status = 'Done';
@@ -290,7 +291,7 @@ class Airtable_Updater_Admin {
     // ID from Airtable
     $wt_id = $entry[$primary_key];
 
-    $message = 'Updating post '.$wt_id.PHP_EOL;
+    $message = 'Updating post '.$wt_id;
     airtable_updater_log($message);
 
     // Find posts with this ID
@@ -318,7 +319,7 @@ class Airtable_Updater_Admin {
     foreach ($entry as $field=>$value) {
       $field_obj = acf_maybe_get_field($field, false, false);
 
-      if ($field_obj['type'] == 'post_object') {
+      if (is_array($field_obj) && $field_obj['type'] == 'post_object') {
         // Update post object field
         // Airtable API sends value as array
         $titles = is_array($value) ? $value : explode(',', $value);

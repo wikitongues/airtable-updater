@@ -50,7 +50,7 @@ class Airtable_Query {
     // Decode as associative array
     $arr = json_decode($result, true);
 
-    if ($arr['error']) {
+    if (array_key_exists('error', $arr)) {
       echo $arr['error']['message'];
       return false;
     }
