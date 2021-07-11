@@ -16,7 +16,7 @@
  * Plugin Name:       Airtable Site Updater
  * Plugin URI:        wikitongues.org
  * Description:       Updates the Wikitongues website from Airtable views.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Wikitongues
  * Author URI:        wikitongues.org
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'AIRTABLE_UPDATER_VERSION', '1.0.0' );
+define( 'AIRTABLE_UPDATER_VERSION', '1.0.2' );
 
 /**
  * The code that runs during plugin activation.
